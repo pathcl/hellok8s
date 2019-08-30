@@ -1,0 +1,64 @@
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: hellok8s
+  labels:
+    app: hellok8s
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hellok8s
+      task: hellok8s
+  template:
+    metadata:
+      labels:
+        app: hellok8s
+        task: hellok8s
+    spec:
+      containers:
+      - name: hellok8s
+        image: pathcl/hellok8s:0.0.1
+        resources:
+          requests:
+            memory: "1024Mi"
+        ports:
+        - containerPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hellok8s
+  namespace: default
+spec:
+  rules:
+  - host: foo.sanmartin.dev
+    http:
+      paths:
+      - backend:
+          serviceName: hellok8s
+          servicePort: http
+        path: /
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  name: hellok8s
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: hellok8s
+    task: hellok8s
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
