@@ -32,7 +32,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: hellok8s
-  namespace: default
 spec:
   rules:
   - host: foo.sanmartin.dev
@@ -42,6 +41,10 @@ spec:
           serviceName: hellok8s
           servicePort: http
         path: /
+  tls:
+  - hosts:
+    - foo.sanmartin.dev
+    secretName: wildcard
 status:
   loadBalancer: {}
 ---
@@ -50,7 +53,6 @@ kind: Service
 metadata:
   annotations:
   name: hellok8s
-  namespace: default
 spec:
   ports:
   - name: http
